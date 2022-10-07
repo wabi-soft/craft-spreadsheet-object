@@ -25,7 +25,7 @@ class StoreSpreadsheet
         $record->setAttribute('assetId', $id);
         $record->setAttribute('siteId', $asset->siteId);
         $record->setAttribute('title', $table['title']);
-        $record->setAttribute('columnCount', $table['columns']);
+        $record->setAttribute('columnCount', $table['columnCount']);
         $record->setAttribute('configuration', $configId);
         $record->setAttribute('sourceData', $data);
         $record->setAttribute('dateUpdated', $now);

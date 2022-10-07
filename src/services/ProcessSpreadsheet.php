@@ -92,7 +92,7 @@ class ProcessSpreadsheet extends Component
         return [
             "title" => $title,
             "rows" => $rows,
-            "columns" => $columnCount
+            "columnCount" => $columnCount
         ];
     }
 
