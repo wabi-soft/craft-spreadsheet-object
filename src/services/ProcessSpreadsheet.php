@@ -12,6 +12,8 @@ use yii\base\InvalidConfigException;
 use craft\helpers\StringHelper;
 use yii\log\Logger;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use craft\helpers\ArrayHelper;
+
 
 /**
  *
@@ -29,7 +31,8 @@ class ProcessSpreadsheet extends Component
      * @throws InvalidConfigException
      * @throws VolumeException
      */
-    public static function getArrayFromAsset(Asset $file = null, array $options = []) {
+    public static function getArrayFromAsset(Asset $file = null, array $options = []): bool|array
+    {
         if(!$file) {
             return false;
         }
@@ -54,7 +57,8 @@ class ProcessSpreadsheet extends Component
     /**
      * @throws Exception
      */
-    private static function readRows($file, array $options = []) {
+    private static function readRows($file, array $options = []): array
+    {
 
         $sheet = array_key_exists('sheet', $options) ? $options['sheet'] : 1;
         $removeRow =  array_key_exists('removeRow', $options) ? $options['removeRow'] : false;
@@ -74,6 +78,8 @@ class ProcessSpreadsheet extends Component
         }
 
         $worksheet = $worksheet->removeAutoFilter();
+        $rowCount = $worksheet->getHighestDataRow();
+
         $title = $worksheet->getTitle();
         $rows = [];
         $columnCount = 0;
@@ -92,33 +98,66 @@ class ProcessSpreadsheet extends Component
         return [
             "title" => $title,
             "rows" => $rows,
-            "columnCount" => $columnCount
+            "columnCount" => $columnCount,
+            "rowCount" => $rowCount,
         ];
     }
 
     private static function removeRow($sheet, $row) {
-        try {
-            return $sheet->removeRow($row);
-        } catch(exception $e) {
-            Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+        $amount = 1;
+        $rows = self::splitMultiple($row);
+        foreach($rows as $row) {
+            try {
+                $sheet->removeRow(intval($row), $amount);
+            } catch(exception $e) {
+                Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+            }
         }
         return $sheet;
     }
+
     private static function removeColumn($sheet, $column) {
-        try {
-            return $sheet->removeColumn($column);
-        } catch(exception $e) {
-            Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+        $columns = self::splitMultiple($column);
+        foreach($columns as $col) {
+            try {
+                $sheet->removeColumn($col);
+            } catch(exception $e) {
+                Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+            }
         }
         return $sheet;
     }
     private static function removeColumnByIndex($sheet, $column) {
-        try {
-            return $sheet->removeColumnByIndex($column);
-        } catch(exception $e) {
-            Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+        $amount = 1;
+        $columns = self::splitMultiple($column);
+        foreach($columns as $col) {
+            try {
+                $sheet->removeColumnByIndex($col, $amount);
+            } catch (exception $e) {
+                Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
+            }
         }
         return $sheet;
+    }
+
+    private static function splitMultiple($string) {
+        $columnsArray = StringHelper::explode($string, ',');
+        $columnsArray = array_unique($columnsArray);
+        arsort($columnsArray);
+        return $columnsArray;
+    }
+
+    private static function splitRange($string) {
+        $options = explode(',', $string);
+        $first = $options[0];
+        $amount = $options[1];
+        if(!is_numeric($first) || !is_numeric($amount)) {
+            return false;
+        }
+        return [
+            'start' => intval($first),
+            'amount' => intval($amount),
+        ];
     }
 
     private static function cleanCell($data) {

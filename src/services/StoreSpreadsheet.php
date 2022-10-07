@@ -8,8 +8,6 @@ use craft\helpers\DateTimeHelper;
 class StoreSpreadsheet
 {
     public static function update($asset, $table, $configId = []) {
-
-        var_dump($configId);
         $configId = json_encode($configId);
         $data = json_encode($table['rows']);
         $id = $asset->id;
@@ -26,6 +24,7 @@ class StoreSpreadsheet
         $record->setAttribute('siteId', $asset->siteId);
         $record->setAttribute('title', $table['title']);
         $record->setAttribute('columnCount', $table['columnCount']);
+        $record->setAttribute('rowCount', $table['rowCount']);
         $record->setAttribute('configuration', $configId);
         $record->setAttribute('sourceData', $data);
         $record->setAttribute('dateUpdated', $now);
@@ -53,6 +52,7 @@ class StoreSpreadsheet
         return [
             "title" => $record->title,
             "columnCount" => $record->columnCount,
+            "rowCount" => $record->rowCount,
             "rows"=>json_decode($record->sourceData)
         ];
     }

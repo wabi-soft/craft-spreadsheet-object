@@ -37,6 +37,7 @@ class Install extends Migration
                     'title' => $this->string(255)->defaultValue(''),
                     'configuration' => $this->string(255)->defaultValue(''),
                     'columnCount' => $this->integer(),
+                    'rowCount' => $this->integer(),
                     'assetId' => $this->integer()->notNull(),
                     'sourceData' => $this->text(),
                     'dateCreated' => $this->dateTime()->notNull(),
