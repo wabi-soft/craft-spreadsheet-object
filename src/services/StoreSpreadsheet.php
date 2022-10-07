@@ -58,13 +58,15 @@ class StoreSpreadsheet
     }
 
     public static function deleteByAssetId($id) {
-        $record = TableRecord::find()
+        $records = TableRecord::find()
             ->where(["assetId" => $id])
-            ->one();
-        if(!$record) {
+            ->all();
+        if(!$records) {
             return true;
         }
-        $record->delete();
+        foreach($records as $record) {
+            $record->delete();
+        }
         return true;
     }
 
