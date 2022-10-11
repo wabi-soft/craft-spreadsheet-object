@@ -55,3 +55,70 @@ Plugin will watch for deleted and updated assets but if you want to flush all th
 ```
 craft spreadsheet-object/flush/all
 ```
+
+## Helper Macro
+
+A helper macro is exposed at `_table-helper` which is compatible with table, row and cells.
+
+A simple table example: 
+```
+{% import '_table-helper' as tableHelper %}
+{% set table = asset | spreadsheetobject %}
+
+{{ tableHelper.table(table) }}
+``` 
+
+Full example: 
+```
+{% import '_table-helper' as tableHelper %}
+{% set table = asset | spreadsheetobject %}
+
+{{ tableHelper.table(table, {
+    thead: false,
+    tfoot: false,
+    classes: {
+        table: false,
+        tr: false,
+        td: false,
+        th: false,
+        thead: false,
+        tfoot: false,
+        first: {
+            tr: false,
+            td: false,
+            th: false,
+        },
+        last: {
+            tr: false,
+            td: false,
+            th: false
+        }
+    }
+}) }}
+
+```
+See: [template code](/src/templates/macros/table.twig)
+
+
+#### Row only example
+
+```
+{% import '_table-helper' as tableHelper %}
+{% set table = asset | spreadsheetobject %}
+
+<table>
+{% for row in table.rows %}
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    {{ tableHelper.tr(row) }}
+{% endfor %}
+</table>
+```
+_Row helper accepts same options object as full table_
+
+See: [template code](/src/templates/macros/tr.twig)
