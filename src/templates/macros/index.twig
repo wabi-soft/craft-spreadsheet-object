@@ -1,0 +1,24 @@
+{% macro table(tableObject, opts = {}) %}{% apply spaceless %}
+    {% import '_table-helper/table.twig' as table %}
+    {{ table.render(tableObject, opts) }}
+{% endapply %}{% endmacro %}
+
+{% macro td(td, opts = {}, loop = false) %}{% apply spaceless %}
+    {% import '_table-helper/td.twig' as td %}
+    {{ td.render(td, opts, loop) }}
+{% endapply %}{% endmacro %}
+
+{% macro th(th, opts = {}, loop = false) %}{% apply spaceless %}
+    {% import '_table-helper/th.twig' as th %}
+    {{ th.render(th, opts, loop) }}
+{% endapply %}{% endmacro %}
+
+{% macro tr(tr, opts = {}, loop = false) %}{% apply spaceless %}
+   {% import '_table-helper/tr.twig' as tr %}
+    {{ tr.render(tr, opts, loop) }}
+{% endapply %}{% endmacro %}
+
+{% macro tfoot(tr, opts = {}, loop = false) %}{% apply spaceless %}
+    {% import '_table-helper/tfoot.twig' as tfoot %}
+    {{ tfoot.render(tr, opts, loop) }}
+{% endapply %}{% endmacro %}

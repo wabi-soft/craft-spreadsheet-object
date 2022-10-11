@@ -1,0 +1,24 @@
+{% macro th(th, opts = {}, loop = false) %}{% apply spaceless %}
+    {%- set opts = {
+        classes: {
+            th: false,
+            first: {
+                th: false
+            },
+            last: {
+                th: false
+            }
+        }
+    }|merge(opts, true) %}
+    {% set class = opts.classes.td ? opts.classes.td : false %}
+    {% if loop and loop.first %}
+        {% set class = opts.classes.first.td ? opts.classes.first.td : class %}
+    {% endif %}
+    {% if loop and loop.last %}
+        {% set class = opts.classes.last.td ? opts.classes.last.td : class %}
+    {% endif %}
+
+    {% tag 'th' with { class: class } %}
+        {{ th }}
+    {% endtag %}
+{% endapply %}{% endmacro %}

@@ -1,0 +1,27 @@
+{% macro render(tr, opts = {}, loop = false) %}{% apply spaceless %}
+    {% import '_table-helper/td.twig' as td %}
+    {%- set opts = {
+        classes: {
+            th: false,
+            tfoot: false,
+            first: {
+                td: false
+            }
+        }
+    }|merge(opts, true) %}
+    {# Figure out if first or last? #}
+    {% set class = opts.classes.tr ? opts.classes.tr : false %}
+    {% if loop and loop.first %}
+        {% set class = opts.classes.first.tr ? opts.classes.first.tr : class %}
+    {% endif %}
+    {% if loop and loop.last %}
+        {% set class = opts.classes.last.tr ? opts.classes.last.tr : class %}
+    {% endif %}
+    {%- tag 'tfoot' with { class: opts.classes.tfoot } %}
+        {%- tag 'tr' with { class: class } %}
+            {%- for column in tr %}
+                {{- td.render(column, opts, loop) }}
+            {%- endfor %}
+        {%- endtag %}
+    {%- endtag %}
+{% endapply %}{% endmacro %}

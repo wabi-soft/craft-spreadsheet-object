@@ -6,12 +6,14 @@ use wabisoft\spreadsheetobject\twigextensions\SpreadsheetObjectTwigExtension;
 use wabisoft\spreadsheetobject\services\StoreSpreadsheet;
 
 use Craft;
+use craft\web\View;
 use craft\log\MonologTarget;
 use Monolog\Formatter\LineFormatter;
 use Psr\Log\LogLevel;
 use yii\base\Event;
 use craft\base\Element;
 use craft\elements\Asset;
+use craft\events\RegisterTemplateRootsEvent;
 
 
 class Plugin extends \craft\base\Plugin
@@ -39,6 +41,9 @@ class Plugin extends \craft\base\Plugin
         Craft::$app->view->registerTwigExtension(new SpreadsheetObjectTwigExtension);
 
 
+        /*
+         * Cleanup references
+         */
         Event::on(
             Asset::class,
             Element::EVENT_AFTER_DELETE,
@@ -48,6 +53,17 @@ class Plugin extends \craft\base\Plugin
             }
         );
 
+        /*
+         * Register helper macros
+         */
+
+        Event::on(
+            View::class,
+            View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
+            function(RegisterTemplateRootsEvent $event) {
+                $event->roots['_table-helper'] = __DIR__ . '/templates/macros';
+            }
+        );
     }
 
 
