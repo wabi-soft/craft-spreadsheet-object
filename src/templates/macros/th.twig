@@ -2,6 +2,12 @@
     {% set defaults = craft.tableHelper.getDefaultOptions() %}
     {%- set opts = defaults|merge(opts, true) %}
     {% set class = opts.classes.th ? opts.classes.th : opts.classes.td %}
+    {% if loop and loop.first %}
+        {% set class = opts.classes.first.th ? opts.classes.first.th : class %}
+    {% endif %}
+    {% if loop and loop.last %}
+        {% set class = opts.classes.last.th ? opts.classes.last.th : class %}
+    {% endif %}
     {% tag 'th' with { class: class, 'data-cell-type': type } %}
         {{ th }}
     {% endtag %}
