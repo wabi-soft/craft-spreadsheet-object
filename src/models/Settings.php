@@ -7,4 +7,5 @@ use craft\base\Model;
 class Settings extends Model
 {
     public bool $storeInDb = true;
+    public array $tableOptions = [];
 }

@@ -2,34 +2,22 @@
     {% import '_table-helper/thead.twig' as thead %}
     {% import '_table-helper/tfoot.twig' as tfoot %}
     {% import '_table-helper/tr.twig' as tr %}
-    {%- set opts = {
-        thead: false,
-        tfoot: false,
-        classes: {
-            table: false,
-            tr: false,
-            td: false,
-            th: false,
-            thead: false,
-            tfoot: false,
-            first: {
-                tr: false,
-                td: false,
-                th: false,
-            },
-            last: {
-                tr: false,
-                td: false,
-                th: false
-            }
-        }
-    }|merge(opts, true) %}
+    {% set defaults = craft.tableHelper.getDefaultOptions() %}
+    {%- set opts = defaults|merge(opts, true) %}
     {%- set rows = tableObject.rows %}
+    {%- set nextRow = opts.applyNextRowTypeToHeading %}
+
     {% if rows|length %}
-        <table{{ opts.classes.table ? " class=#{opts.classes.table}" }}>
+        {%- tag 'table' with { class: opts.classes.table, 'data-table-typed': defaults.autoCellDataAttribute } %}
+            {% if opts.caption and opts.caption|length %}
+            <caption>
+                {{ opts.caption|raw }}
+            </caption>
+            {% endif %}
             {%- for row in rows %}
                 {%- if opts.thead and loop.first %}
-                    {{- thead.render(row, opts, loop) }}
+                    {% set nextRow = nextRow ? rows[loop.index + 1]|default(false) : false %}
+                    {{- thead.render(row, opts, loop, nextRow) }}
                 {%- elseif opts.tfoot and loop.last  %}
                     {{- tfoot.render(row, opts, loop) }}
                 {%- else %}
@@ -42,6 +30,6 @@
                     {% if (not opts.tfoot and loop.last) or (opts.tfoot and loop.index == (rows|length - 1)) %}</tbody>{% endif %}
                 {%- endif %}
             {%- endfor %}
-        </table>
+        {% endtag %}
     {% endif %}
 {% endapply %}{% endmacro %}

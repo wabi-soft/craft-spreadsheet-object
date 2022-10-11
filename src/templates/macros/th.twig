@@ -1,14 +1,8 @@
-{% macro th(th, opts = {}, loop = false) %}{% apply spaceless %}
-    {%- set opts = {
-        classes: {
-            th: false,
-            td: false,
-        }
-    }|merge(opts, true) %}
+{% macro th(th, opts = {}, loop = false, type = false) %}{% apply spaceless %}
+    {% set defaults = craft.tableHelper.getDefaultOptions() %}
+    {%- set opts = defaults|merge(opts, true) %}
     {% set class = opts.classes.th ? opts.classes.th : opts.classes.td %}
-
-
-    {% tag 'th' with { class: class } %}
+    {% tag 'th' with { class: class, 'data-cell-type': type } %}
         {{ th }}
     {% endtag %}
 {% endapply %}{% endmacro %}

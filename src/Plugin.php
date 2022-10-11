@@ -4,6 +4,7 @@ namespace wabisoft\spreadsheetobject;
 
 use wabisoft\spreadsheetobject\twigextensions\SpreadsheetObjectTwigExtension;
 use wabisoft\spreadsheetobject\services\StoreSpreadsheet;
+use wabisoft\spreadsheetobject\variables\TableHelperVariable;
 
 use Craft;
 use craft\web\View;
@@ -14,6 +15,7 @@ use yii\base\Event;
 use craft\base\Element;
 use craft\elements\Asset;
 use craft\events\RegisterTemplateRootsEvent;
+use craft\web\twig\variables\CraftVariable;
 
 
 class Plugin extends \craft\base\Plugin
@@ -21,6 +23,7 @@ class Plugin extends \craft\base\Plugin
     public function init()
     {
         parent::init();
+
         /*
          * @link: https://putyourlightson.com/articles/adding-logging-to-craft-plugins-with-monolog
          */
@@ -35,11 +38,24 @@ class Plugin extends \craft\base\Plugin
                 dateFormat: 'Y-m-d H:i:s',
             ),
         ]);
+
         /*
          * Add Our Twig Extensions
          */
         Craft::$app->view->registerTwigExtension(new SpreadsheetObjectTwigExtension);
 
+        /*
+         * Register variables
+         */
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function(Event $e) {
+                /** @var CraftVariable $variable */
+                $variable = $e->sender;
+                $variable->set('tableHelper', TableHelperVariable::class);
+            }
+        );
 
         /*
          * Cleanup references
@@ -56,7 +72,6 @@ class Plugin extends \craft\base\Plugin
         /*
          * Register helper macros
          */
-
         Event::on(
             View::class,
             View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,

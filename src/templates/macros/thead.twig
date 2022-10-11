@@ -1,15 +1,8 @@
-{% macro render(tr, opts = {}, loop = false) %}{% apply spaceless %}
+{% macro render(tr, opts = {}, loop = false, nextRow = false) %}{% apply spaceless %}
     {% import '_table-helper/th.twig' as macros %}
-    {%- import _self as self %}
-    {%- set opts = {
-        classes: {
-            th: false,
-            thead: false,
-            first: {
-                td: false
-            }
-        }
-    }|merge(opts, true) %}
+    {% set defaults = craft.tableHelper.getDefaultOptions() %}
+    {%- set opts = defaults|merge(opts, true) %}
+
     {# Figure out if first or last? #}
     {% set class = opts.classes.tr ? opts.classes.tr : false %}
     {% if loop and loop.first %}
@@ -21,7 +14,10 @@
     {%- tag 'thead' with { class: opts.classes.thead } %}
         {%- tag 'tr' with { class: class } %}
             {%- for column in tr %}
-                {{- macros.th(column, opts, loop) }}
+                {% if nextRow %}
+                    {% set type = craft.tableHelper.getDataType(nextRow[loop.index - 1]|default(false), opts.autoCellDataAttribute) %}
+                {% endif %}
+                {{- macros.th(column, opts, loop, type|default(false)) }}
             {%- endfor %}
         {%- endtag %}
     {%- endtag %}

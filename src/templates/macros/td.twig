@@ -1,15 +1,6 @@
 {% macro render(td, opts = {}, loop = false) %}{% apply spaceless %}
-    {%- set opts = {
-        classes: {
-            td: false,
-            first: {
-                td: false
-            },
-            last: {
-                td: false
-            }
-        }
-    }|merge(opts, true) %}
+    {% set defaults = craft.tableHelper.getDefaultOptions() %}
+    {%- set opts = defaults|merge(opts, true) %}
     {% set class = opts.classes.td ? opts.classes.td : false %}
     {% if loop and loop.first %}
         {% set class = opts.classes.first.td ? opts.classes.first.td : class %}
@@ -17,8 +8,8 @@
     {% if loop and loop.last %}
         {% set class = opts.classes.last.td ? opts.classes.last.td : class %}
     {% endif %}
-
-    {%- tag 'td' with { class: class } %}
+    {% set type = craft.tableHelper.getDataType(td, opts.autoCellDataAttribute) %}
+    {%- tag 'td' with { class: class, 'data-cell-type': type } %}
         {{- td }}
     {%- endtag %}
 {% endapply %}{% endmacro %}

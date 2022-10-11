@@ -1,15 +1,8 @@
 {% macro render(tr, opts = {}, loop = false) %}{% apply spaceless %}
     {% import '_table-helper/td.twig' as td %}
-    {%- set opts = {
-        classes: {
-            tr: false,
-            td: false,
-            first: {
-                tr: false,
-                td: false
-            }
-        }
-    }|merge(opts, true) %}
+    {% set defaults = craft.tableHelper.getDefaultOptions() %}
+    {%- set opts = defaults|merge(opts, true) %}
+
     {# Figure out if first or last? #}
     {% set class = opts.classes.tr ? opts.classes.tr : false %}
     {% if loop and loop.first %}
