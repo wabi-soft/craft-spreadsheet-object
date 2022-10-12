@@ -38,7 +38,7 @@ class TableHelperVariable
 
     public static function getDefaultOptions() {
       $config =  \wabisoft\spreadsheetobject\Plugin::getInstance()->getSettings()->tableOptions;
-      return ArrayHelper::merge($config, self::DEFAULT_TABLE_OPTIONS);
+      return ArrayHelper::merge( self::DEFAULT_TABLE_OPTIONS, $config);
     }
     public static function getDataType($string, $render = true) {
         return CellType::getDataType($string, $render);

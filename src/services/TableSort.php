@@ -7,16 +7,18 @@ use craft\helpers\ArrayHelper;
 class TableSort
 {
     public static function sortRows($rows, $options) {
-        var_dump('SORTING');
         $hasHeading = array_key_exists('thead', $options) && $options['thead'];
-
-        var_dump($hasHeading);
         $direction = SORT_ASC;
-        $flag = SORT_NUMERIC;
-//       if(is_array($options['sort'])) {
-//
-//       }
-        $key = $options['sortColumnIndex'];
+        $flag = SORT_REGULAR;
+
+        if(is_array($options['sortColumnIndex'])) {
+            $nested = $options['sortColumnIndex'];
+            $key = array_key_exists('key', $nested) ? $nested['key'] : 0;
+            $direction = array_key_exists('direction', $nested) ? $nested['direction'] : $direction;
+            $flag = array_key_exists('sortFlag', $nested) ? $nested['sortFlag'] : $flag;
+        } else {
+            $key = $options['sortColumnIndex'];
+        }
         $key = is_numeric($key) ? $key - 1 : $key;
         $heading = [];
         if($hasHeading) {
