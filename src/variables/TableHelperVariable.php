@@ -4,6 +4,8 @@ namespace wabisoft\spreadsheetobject\variables;
 
 use craft\helpers\ArrayHelper;
 use craft\helpers\StringHelper;
+use wabisoft\spreadsheetobject\services\CellType;
+use wabisoft\spreadsheetobject\services\TableSort;
 
 class TableHelperVariable
 {
@@ -13,6 +15,7 @@ class TableHelperVariable
         'caption' => false,
         'autoCellDataAttribute' => true,
         'applyNextRowTypeToHeading' => true,
+        'sortColumnIndex' => false,
         'classes' => [
             'table' => false,
             'tr' => false,
@@ -38,30 +41,9 @@ class TableHelperVariable
       return ArrayHelper::merge($config, self::DEFAULT_TABLE_OPTIONS);
     }
     public static function getDataType($string, $render = true) {
-        if(!$render) {
-            return false;
-        }
-        $string = StringHelper::trim($string);
-        if($string === '') {
-            return 'empty';
-        }
-
-        $removeNumberChars = StringHelper::replace($string, ',', '');
-        if($removeNumberChars === '') {
-            return 'empty';
-        }
-        if(is_numeric($removeNumberChars)) {
-            if(StringHelper::contains($string, ',', false)) {
-                return 'number--comma';
-            }
-            if(StringHelper::contains($string, '.', false)) {
-                return 'number--decimal';
-            }
-            return 'number';
-        }
-        if(StringHelper::isAlpha($string)) {
-            return 'text';
-        }
-        return 'text';
+        return CellType::getDataType($string, $render);
+    }
+    public static function getSortedRows($rows, $options) {
+        return TableSort::sortRows($rows, $options);
     }
 }

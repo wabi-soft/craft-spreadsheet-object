@@ -14,6 +14,10 @@
                 {{ opts.caption|raw }}
             </caption>
             {% endif %}
+
+            {% if opts.sortColumnIndex is defined %}
+                {% set rows = craft.tableHelper.getSortedRows(rows, opts) %}
+            {% endif %}
             {%- for row in rows %}
                 {%- if opts.thead and loop.first %}
                     {% set nextRow = nextRow ? rows[loop.index + 1]|default(false) : false %}
