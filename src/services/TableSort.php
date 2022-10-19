@@ -3,6 +3,7 @@
 namespace wabisoft\spreadsheetobject\services;
 
 use craft\helpers\ArrayHelper;
+use craft\helpers\StringHelper;
 
 class TableSort
 {
@@ -30,5 +31,28 @@ class TableSort
             $rows = ArrayHelper::merge($heading, $rows);
         }
         return $rows;
+    }
+
+    public static function removeColumns($rows, $order = null) {
+        $updated = [];
+        if(!$order) {
+            return $rows;
+        }
+        $orderArray = StringHelper::split($order, ',');
+        foreach ($rows as $key => $row) {
+            $updatedRow = null;
+            foreach ($row as $colKey => $column) {
+                if(!in_array(intval($colKey), $orderArray)) {
+                    $updatedRow[] = $column;
+                }
+            }
+            if($updatedRow) {
+                $updated[] = $updatedRow;
+            }
+        }
+        if(count($updated) == 0) {
+            return $rows;
+        }
+        return $updated;
     }
 }

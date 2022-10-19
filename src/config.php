@@ -5,6 +5,8 @@
  */
 return [
     'storeInDb' => true,
+    'cellModifierTemplates'=> '_cells',
+    'defaultTemplateName' => 'default',
     'tableOptions' => [
         'thead' => false,
         'tfoot' => false,

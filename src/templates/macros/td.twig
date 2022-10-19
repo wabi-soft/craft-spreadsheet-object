@@ -2,14 +2,19 @@
     {% set defaults = craft.tableHelper.getDefaultOptions() %}
     {%- set opts = defaults|merge(opts, true) %}
     {% set class = opts.classes.td ? opts.classes.td : false %}
+    {% set refTr = opts.reference.tr is defined ? opts.reference.tr : false %}
+    {% set style = opts.style is defined ? opts.style : false %}
+
     {% if loop and loop.first %}
         {% set class = opts.classes.first.td ? opts.classes.first.td : class %}
     {% endif %}
     {% if loop and loop.last %}
         {% set class = opts.classes.last.td ? opts.classes.last.td : class %}
     {% endif %}
+
     {% set type = craft.tableHelper.getDataType(td, opts.autoCellDataAttribute) %}
     {%- tag 'td' with { class: class, 'data-cell-type': type } %}
-        {{- td }}
+        {{ craft.tableHelper.modifyCell(td, { tr: refTr, td: loop ?? false, style })|raw }}
     {%- endtag %}
 {% endapply %}{% endmacro %}
+cdd

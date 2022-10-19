@@ -15,6 +15,10 @@
             </caption>
             {% endif %}
 
+            {% if opts.removeColumns %}
+                {% set rows = craft.tableHelper.removeColumns(rows, opts) %}
+            {% endif %}
+
             {% if opts.sortColumnIndex is defined %}
                 {% set rows = craft.tableHelper.getSortedRows(rows, opts) %}
             {% endif %}

@@ -2,6 +2,8 @@
     {% import '_table-helper/td.twig' as td %}
     {% set defaults = craft.tableHelper.getDefaultOptions() %}
     {%- set opts = defaults|merge(opts, true) %}
+    {% set ref = loop %}
+    {% set opts = ({reference: { tr: ref}})|merge(opts, true) %}
 
     {# Figure out if first or last? #}
     {% set class = opts.classes.tr ? opts.classes.tr : false %}
