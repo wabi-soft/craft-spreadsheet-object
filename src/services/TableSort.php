@@ -33,16 +33,53 @@ class TableSort
         return $rows;
     }
 
+
+
     public static function removeColumns($rows, $order = null) {
+        return self::modifyColumns($rows, $order);
+    }
+    public static function removeRows($rows, $order = null) {
+        return self::modifyRows($rows, $order);
+    }
+
+    public static function onlyRows($rows, $order = null) {
+        return self::modifyRows($rows, $order, 'only');
+    }
+    public static function onlyColumns($rows, $order = null) {
+        return self::modifyColumns($rows, $order, 'only');
+    }
+
+    private static function modifyRows($rows, $order, $type = 'remove') {
         $updated = [];
         if(!$order) {
             return $rows;
         }
-        $orderArray = StringHelper::split($order, ',');
+        $orderArray = StringHelper::split($order);
         foreach ($rows as $key => $row) {
+            $checkKey = intval($key) + 1;
+            $shouldModify = $type === 'remove' ? !in_array($checkKey, $orderArray) : in_array($checkKey, $orderArray);
+            if($shouldModify) {
+                $updated[] = $row;
+            }
+        }
+        if(count($updated) == 0) {
+            return $rows;
+        }
+        return $updated;
+    }
+
+    private static function modifyColumns($rows, $order, $type = 'remove') {
+        $updated = [];
+        if(!$order) {
+            return $rows;
+        }
+        $orderArray = StringHelper::split($order);
+        foreach ($rows as $row) {
             $updatedRow = null;
             foreach ($row as $colKey => $column) {
-                if(!in_array(intval($colKey), $orderArray)) {
+                $checkKey = intval($colKey) + 1;
+                $shouldModify = $type === 'remove' ? !in_array($checkKey, $orderArray) : in_array($checkKey, $orderArray);
+                if($shouldModify) {
                     $updatedRow[] = $column;
                 }
             }
@@ -55,4 +92,5 @@ class TableSort
         }
         return $updated;
     }
+
 }

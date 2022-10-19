@@ -17,6 +17,9 @@ class TableHelperVariable
         'applyNextRowTypeToHeading' => true,
         'sortColumnIndex' => false,
         'removeColumns' => false,
+        'removeRows' => false,
+        'onlyColumns' => false,
+        'onlyRows' => false,
         'classes' => [
             'table' => false,
             'tr' => false,
@@ -49,8 +52,19 @@ class TableHelperVariable
     }
     public static function removeColumns($rows, $options) {
         $order = $options['removeColumns'];
-
         return TableSort::removeColumns($rows, $order);
+    }
+    public static function onlyColumns($rows, $options) {
+        $order = $options['onlyColumns'];
+        return TableSort::onlyColumns($rows, $order);
+    }
+    public static function removeRows($rows, $options) {
+        $order = $options['removeRows'];
+        return TableSort::removeRows($rows, $order);
+    }
+    public static function onlyRows($rows, $options) {
+        $order = $options['onlyRows'];
+        return TableSort::onlyRows($rows, $order);
     }
     public static function modifyCell($cell, $properties = []) {
         return ProcessCell::modifyCell($cell, $properties);

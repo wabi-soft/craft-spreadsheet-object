@@ -18,6 +18,15 @@
             {% if opts.removeColumns %}
                 {% set rows = craft.tableHelper.removeColumns(rows, opts) %}
             {% endif %}
+            {% if opts.onlyColumns %}
+                {% set rows = craft.tableHelper.onlyColumns(rows, opts) %}
+            {% endif %}
+            {% if opts.removeRows %}
+                {% set rows = craft.tableHelper.removeRows(rows, opts) %}
+            {% endif %}
+            {% if opts.onlyRows %}
+                {% set rows = craft.tableHelper.onlyRows(rows, opts) %}
+            {% endif %}
 
             {% if opts.sortColumnIndex is defined %}
                 {% set rows = craft.tableHelper.getSortedRows(rows, opts) %}
