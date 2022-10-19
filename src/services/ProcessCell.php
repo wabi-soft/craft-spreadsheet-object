@@ -3,6 +3,7 @@
 namespace wabisoft\spreadsheetobject\services;
 
 use wabisoft\spreadsheetobject\Plugin;
+use wabisoft\framework\services\TemplateLoader;
 
 class ProcessCell
 {
@@ -14,7 +15,8 @@ class ProcessCell
         if(!$paths) {
             return $cell;
         }
-        $cellUpdate = CellTemplateLoader::load($paths, ['cell' => $cell]);
+        $cellUpdate = TemplateLoader::load($paths, ['cell' => $cell]);
+
         if(!$cellUpdate) {
             return $cell;
         }
@@ -62,7 +64,6 @@ class ProcessCell
 
         return $paths;
     }
-
 
     private static function assemblePaths( $segments = [] ): string
     {
