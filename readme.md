@@ -1,7 +1,5 @@
 # How to use
 
-Documenation coming real soon!
-
 ```twig
 {% set table = spreadsheetobject(asset) %}
 ```
