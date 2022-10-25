@@ -1,6 +1,6 @@
 # How to use
 
-Documenation soon!
+Documenation coming real soon!
 
 ```twig
 {% set table = spreadsheetobject(asset) %}
