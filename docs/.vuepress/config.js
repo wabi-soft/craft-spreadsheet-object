@@ -1,18 +1,6 @@
-const { description } = require('../../package')
-
 module.exports = {
-
-  title: 'Vuepress Docs Boilerplate',
-  /**
-   * Ref：https://v1.vuepress.vuejs.org/config/#description
-   */
-  description: description,
-
-  /**
-   * Extra tags to be injected to the page HTML `<head>`
-   *
-   * ref：https://v1.vuepress.vuejs.org/config/#head
-   */
+  base: '/docs',
+  title: 'Spreadsheet Object',
   head: [
     ['meta', { name: 'theme-color', content: '#000' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
@@ -32,13 +20,29 @@ module.exports = {
     lastUpdated: false,
 
     sidebar: {
-      '/docs/': [
+      '/':  [
         {
-          title: 'Guide',
-          collapsable: false,
-          children: [
-            '',
-            'using-vue',
+          "title": "Get Started",
+          "collapsable": false,
+          "children": [
+            "get-started/installation-setup",
+            "get-started/requirements"
+          ]
+        },
+        {
+          "title": "Template Guides",
+          "collapsable": false,
+          "children": [
+            "templates/simple",
+            "templates/table-helper",
+            "templates/advanced-overrides"
+          ]
+        },
+        {
+          "title": "Plugin Config",
+          "collapsable": false,
+          "children": [
+            "config/settings",
           ]
         }
       ],

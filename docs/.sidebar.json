@@ -1,4 +1,4 @@
-[
+{"sidebar": [
   {
     "title": "Get Started",
     "collapsable": false,
@@ -22,3 +22,4 @@
     ]
   }
 ]
+}
