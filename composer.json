@@ -3,6 +3,7 @@
   "description": "CSV, XLS and XLSX files to code to use in Twig.",
   "type": "craft-plugin",
   "license": "proprietary",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "WabiSoft",
@@ -19,7 +20,7 @@
     "craftcms/cms": "^4.0.0",
     "php": "^8.0",
     "phpoffice/phpspreadsheet": "^1.23",
-    "wabisoft/framework": "dev-main"
+    "wabisoft/framework": "^1.1.0"
   },
   "autoload": {
     "psr-4": {
