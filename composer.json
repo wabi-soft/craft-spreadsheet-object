@@ -4,6 +4,13 @@
   "type": "craft-plugin",
   "license": "proprietary",
   "version": "1.0.0",
+  "scripts": {
+    "changelog": "conventional-changelog",
+    "release": "conventional-changelog --commit",
+    "release:patch": "conventional-changelog --patch --commit",
+    "release:minor": "conventional-changelog --minor --commit",
+    "release:major": "conventional-changelog --major --commit"
+  },
   "authors": [
     {
       "name": "WabiSoft",
@@ -22,6 +29,9 @@
     "phpoffice/phpspreadsheet": "^1.23",
     "wabisoft/framework": "^1.1.0"
   },
+  "require-dev": {
+    "marcocesarato/php-conventional-changelog": "^1.16"
+  },
   "autoload": {
     "psr-4": {
       "wabisoft\\spreadsheetobject\\": "src/"
@@ -30,5 +40,11 @@
   "extra": {
     "name": "Spreadsheet Object",
     "handle": "spreadsheet-object"
+  },
+  "config": {
+    "allow-plugins": {
+      "craftcms/plugin-installer": true,
+      "yiisoft/yii2-composer": true
+    }
   }
 }
