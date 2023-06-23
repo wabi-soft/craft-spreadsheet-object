@@ -1,19 +1,19 @@
 {
-  "name": "craft-spreadsheet-object",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "authors": {
-    "name": "",
-    "email": ""
-  },
-  "repository": "craft-spreadsheet-object",
-  "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "vuepress": "^1.5.3"
-  }
+    "name": "craft-spreadsheet-object",
+    "version": "1.0.1",
+    "description": "",
+    "main": "index.js",
+    "authors": {
+        "name": "",
+        "email": ""
+    },
+    "repository": "craft-spreadsheet-object",
+    "scripts": {
+        "docs:dev": "vuepress dev docs",
+        "docs:build": "vuepress build docs"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "vuepress": "^1.5.3"
+    }
 }

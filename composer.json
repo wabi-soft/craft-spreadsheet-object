@@ -1,50 +1,50 @@
 {
-  "name": "wabisoft/spreadsheetobject",
-  "description": "CSV, XLS and XLSX files to code to use in Twig.",
-  "type": "craft-plugin",
-  "license": "proprietary",
-  "version": "1.0.0",
-  "scripts": {
-    "changelog": "conventional-changelog",
-    "release": "conventional-changelog --commit",
-    "release:patch": "conventional-changelog --patch --commit",
-    "release:minor": "conventional-changelog --minor --commit",
-    "release:major": "conventional-changelog --major --commit"
-  },
-  "authors": [
-    {
-      "name": "WabiSoft",
-      "homepage": "https://wabisoft.com"
+    "name": "wabisoft/spreadsheetobject",
+    "description": "CSV, XLS and XLSX files to code to use in Twig.",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "version": "1.0.1",
+    "scripts": {
+        "changelog": "conventional-changelog",
+        "release": "conventional-changelog --commit",
+        "release:patch": "conventional-changelog --patch --commit",
+        "release:minor": "conventional-changelog --minor --commit",
+        "release:major": "conventional-changelog --major --commit"
+    },
+    "authors": [
+        {
+            "name": "WabiSoft",
+            "homepage": "https://wabisoft.com"
+        }
+    ],
+    "support": {
+        "email": "help@wabisoft.com",
+        "issues": "https://github.com/wabi-soft/craft-spreadsheet-object/issues?state=open",
+        "source": "https://github.com/wabi-soft/craft-spreadsheet-object",
+        "docs": "https://github.com/wabi-soft/craft-spreadsheet-object/blob/master/README.md"
+    },
+    "require": {
+        "craftcms/cms": "^4.0.0",
+        "php": "^8.0",
+        "phpoffice/phpspreadsheet": "^1.23",
+        "wabisoft/framework": "^1.1.0"
+    },
+    "require-dev": {
+        "marcocesarato/php-conventional-changelog": "^1.16"
+    },
+    "autoload": {
+        "psr-4": {
+            "wabisoft\\spreadsheetobject\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Spreadsheet Object",
+        "handle": "spreadsheet-object"
+    },
+    "config": {
+        "allow-plugins": {
+            "craftcms/plugin-installer": true,
+            "yiisoft/yii2-composer": true
+        }
     }
-  ],
-  "support": {
-    "email": "help@wabisoft.com",
-    "issues": "https://github.com/wabi-soft/craft-spreadsheet-object/issues?state=open",
-    "source": "https://github.com/wabi-soft/craft-spreadsheet-object",
-    "docs": "https://github.com/wabi-soft/craft-spreadsheet-object/blob/master/README.md"
-  },
-  "require": {
-    "craftcms/cms": "^4.0.0",
-    "php": "^8.0",
-    "phpoffice/phpspreadsheet": "^1.23",
-    "wabisoft/framework": "^1.1.0"
-  },
-  "require-dev": {
-    "marcocesarato/php-conventional-changelog": "^1.16"
-  },
-  "autoload": {
-    "psr-4": {
-      "wabisoft\\spreadsheetobject\\": "src/"
-    }
-  },
-  "extra": {
-    "name": "Spreadsheet Object",
-    "handle": "spreadsheet-object"
-  },
-  "config": {
-    "allow-plugins": {
-      "craftcms/plugin-installer": true,
-      "yiisoft/yii2-composer": true
-    }
-  }
 }
