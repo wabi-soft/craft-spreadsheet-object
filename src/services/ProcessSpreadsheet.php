@@ -84,16 +84,18 @@ class ProcessSpreadsheet extends Component
         $rows = [];
         $columnCount = 0;
         foreach($worksheet->toArray() as $row ) {
-            $cells = [];
-            $columnNumber = 0;
-            foreach($row as $key => $column) {
-                if($column) {
-                    $columnNumber = $key++;
-                    $cells[] = self::cleanCell($column);
+            if(array_filter($row)) {
+                $cells = [];
+                $columnNumber = 0;
+                foreach($row as $key => $column) {
+                    if($column) {
+                        $columnNumber = $key++;
+                        $cells[] = self::cleanCell($column);
+                    }
                 }
+                $rows[] = $cells;
+                $columnCount = max($columnCount, $columnNumber);
             }
-            $rows[] = $cells;
-            $columnCount = max($columnCount, $columnNumber);
         }
         return [
             "title" => $title,
