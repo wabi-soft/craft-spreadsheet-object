@@ -4,6 +4,15 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [2.0.6](https://github.com/wabi-soft/craft-spreadsheet-object/compare/v2.0.5...v2.0.6) (2025-05-05)
+
+### Bug Fixes
+
+* Sorting by default ([7aadee](https://github.com/wabi-soft/craft-spreadsheet-object/commit/7aadee3267f6a88fa5ad318147386a542be184b7))
+
+
+---
+
 ## [2.0.5](https://github.com/wabi-soft/craft-spreadsheet-object/compare/v2.0.4...v2.0.5) (2025-05-05)
 
 
