@@ -9,6 +9,6 @@
         {% set class = opts.classes.last.th ? opts.classes.last.th : class %}
     {% endif %}
     {% tag 'th' with { class: class, 'data-cell-type': type } %}
-        {{ th }}
+        {{ th|nl2br }}
     {% endtag %}
 {% endapply %}{% endmacro %}
