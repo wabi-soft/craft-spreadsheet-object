@@ -3,7 +3,7 @@
     "description": "CSV, XLS and XLSX files to code to use in Twig.",
     "type": "craft-plugin",
     "license": "proprietary",
-    "version": "6.0.0",
+    "version": "2.0.0",
     "scripts": {
         "changelog": "php vendor/bin/conventional-changelog",
         "release": "php vendor/bin/conventional-changelog --commit",
