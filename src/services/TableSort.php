@@ -24,6 +24,12 @@ class TableSort
         }
 
         $hasHeading = $options['thead'] ?? false;
+        
+        // Skip sorting if sortColumnIndex is false
+        if (isset($options['sortColumnIndex']) && $options['sortColumnIndex'] === false) {
+            return $rows;
+        }
+        
         $sortConfig = self::parseSortConfig($options['sortColumnIndex'] ?? 0);
         
         // Extract and remove heading if present

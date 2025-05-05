@@ -95,8 +95,51 @@ Full example:
         }
     }
 }) }}
+```
+
+### Table Sorting
+
+You can control table sorting with the `sortColumnIndex` option:
 
 ```
+{% import '_table-helper' as tableHelper %}
+{% set table = asset | spreadsheetobject %}
+
+{# Sort by the first column (index 0) #}
+{{ tableHelper.table(table, {
+    thead: true,
+    sortColumnIndex: 0
+}) }}
+
+{# Sort by the second column (index 1) in descending order #}
+{{ tableHelper.table(table, {
+    thead: true,
+    sortColumnIndex: {
+        key: 1,
+        direction: 'desc'  
+    }
+}) }}
+
+{# Disable sorting (use the original spreadsheet order) #}
+{{ tableHelper.table(table, {
+    thead: true,
+    sortColumnIndex: false
+}) }}
+```
+
+#### Sorting Options
+
+- `sortColumnIndex`: Set to number (0, 1, 2...) to sort by column index
+- `sortColumnIndex: false`: Disables sorting, displays in original order
+- Advanced sorting with object format:
+  ```
+  sortColumnIndex: {
+    key: 1,                 # Column index to sort by
+    direction: 'asc|desc',  # Sort direction (asc = SORT_ASC, desc = SORT_DESC)
+    sortFlag: SORT_REGULAR  # PHP sort flag
+  }
+  ```
+
 See: [template code](/src/templates/macros/table.twig)
 
 
