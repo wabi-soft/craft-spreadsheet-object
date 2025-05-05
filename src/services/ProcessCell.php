@@ -5,69 +5,106 @@ namespace wabisoft\spreadsheetobject\services;
 use wabisoft\spreadsheetobject\Plugin;
 use wabisoft\framework\services\TemplateLoader;
 
+/**
+ * Service class for processing and modifying spreadsheet cells
+ */
 class ProcessCell
 {
-    public static function modifyCell($cell, $properties) {
-        $tr = $properties['tr'] ?? false;
-        $index = $properties['td'] ?? false;
+    /**
+     * Modifies a cell based on its properties and available templates
+     *
+     * @param string $cell The cell content to modify
+     * @param array $properties Cell properties including row, column, and style information
+     * @return string The modified cell content
+     */
+    public static function modifyCell(string $cell, array $properties): string
+    {
+        $rowProperties = $properties['tr'] ?? false;
+        $columnProperties = $properties['td'] ?? false;
         $style = $properties['style'] ?? false;
-        $paths = self::getTemplatePaths($tr, $index, $style);
-        if(!$paths) {
-            return $cell;
-        }
-        $cellUpdate = TemplateLoader::load($paths, ['cell' => $cell]);
 
-        if(!$cellUpdate) {
+        $templatePaths = self::getTemplatePaths($rowProperties, $columnProperties, $style);
+        
+        if (!$templatePaths) {
             return $cell;
         }
-        return $cellUpdate;
+
+        $modifiedCell = TemplateLoader::load($templatePaths, ['cell' => $cell]);
+
+        return $modifiedCell ?: $cell;
     }
 
-    private static function getTemplatePaths($tr, $td, $style) {
-        $templates =  Plugin::getInstance()->getSettings()->cellModifierTemplates;
-        $default =  Plugin::getInstance()->getSettings()->defaultTemplateName;
-        $row =  Plugin::getInstance()->getSettings()->rowTemplates;
-        $column =  Plugin::getInstance()->getSettings()->columnTemplates;
-        if(!$templates) {
+    /**
+     * Gets the template paths based on row, column, and style properties
+     *
+     * @param array|false $rowProperties Row properties
+     * @param array|false $columnProperties Column properties
+     * @param string|false $style Style identifier
+     * @return array|false Array of template paths or false if no templates available
+     */
+    private static function getTemplatePaths($rowProperties, $columnProperties, $style)
+    {
+        $settings = Plugin::getInstance()->getSettings();
+        $templates = $settings->cellModifierTemplates;
+        $defaultTemplate = $settings->defaultTemplateName;
+        $rowTemplatePrefix = $settings->rowTemplates;
+        $columnTemplatePrefix = $settings->columnTemplates;
+
+        if (!$templates || (!$rowProperties && !$columnProperties && !$style)) {
             return false;
         }
 
-        if(!$tr && !$td && !$style) {
-            return false;
+        // Extract row properties
+        $rowIndex = $rowProperties['index'] ?? '';
+        $isFirstRow = $rowProperties['first'] ?? false;
+        $isLastRow = $rowProperties['last'] ?? false;
+
+        // Extract column properties
+        $columnIndex = $columnProperties['index'] ?? '';
+        $isFirstColumn = $columnProperties['first'] ?? false;
+        $isLastColumn = $columnProperties['last'] ?? false;
+
+        // Determine row path
+        $rowPath = $rowIndex;
+        if ($isFirstRow) {
+            $rowPath = 'first';
+        } elseif ($isLastRow) {
+            $rowPath = 'last';
         }
-        $trPath = $tr['index'] ?? '';
-        $trFirst = $tr['first'] ?? '';
-        $trLast = $tr['last'] ?? '';
-        $tdPath = $td['index'] ?? '';
-        $tdFirst = $td['first'] ?? '';
-        $tdLast = $td['last'] ?? '';
-        if($trFirst) {
-            $trPath = 'first';
-        } elseif ($trLast) {
-            $trPath = 'last';
+
+        // Determine column path
+        $columnPath = $columnIndex;
+        if ($isFirstColumn) {
+            $columnPath = 'first';
+        } elseif ($isLastColumn) {
+            $columnPath = 'last';
         }
-        if($tdFirst) {
-            $tdPath = 'first';
-        } elseif ($tdLast) {
-            $tdPath = 'last';
-        }
-        $paths = [];
-        $paths[] = self::assemblePaths([$style, $row . $trPath, $column . $tdPath]);
-        $paths[] = self::assemblePaths([$style, $row . $trPath]);
-        $paths[] = self::assemblePaths([$style, $column . $tdPath]);
-        $paths[] = self::assemblePaths([$row . $trPath, $column . $tdPath]);
-        $paths[] = self::assemblePaths([$row . $trPath]);
-        $paths[] = self::assemblePaths([$column . $tdPath]);
-        $paths[] = self::assemblePaths([$style, $default]);
-        $paths[] = self::assemblePaths([$style]);
-        $paths[] = self::assemblePaths([$default]);
+
+        // Build template paths in order of specificity
+        $paths = [
+            self::assemblePaths([$style, $rowTemplatePrefix . $rowPath, $columnTemplatePrefix . $columnPath]),
+            self::assemblePaths([$style, $rowTemplatePrefix . $rowPath]),
+            self::assemblePaths([$style, $columnTemplatePrefix . $columnPath]),
+            self::assemblePaths([$rowTemplatePrefix . $rowPath, $columnTemplatePrefix . $columnPath]),
+            self::assemblePaths([$rowTemplatePrefix . $rowPath]),
+            self::assemblePaths([$columnTemplatePrefix . $columnPath]),
+            self::assemblePaths([$style, $defaultTemplate]),
+            self::assemblePaths([$style]),
+            self::assemblePaths([$defaultTemplate])
+        ];
 
         return $paths;
     }
 
-    private static function assemblePaths( $segments = [] ): string
+    /**
+     * Assembles template paths from segments
+     *
+     * @param array $segments Path segments to combine
+     * @return string The assembled template path
+     */
+    private static function assemblePaths(array $segments): string
     {
-        $templates =  Plugin::getInstance()->getSettings()->cellModifierTemplates;
-        return ($templates . '/' . implode('/', $segments));
+        $templates = Plugin::getInstance()->getSettings()->cellModifierTemplates;
+        return $templates . '/' . implode('/', $segments);
     }
 }
