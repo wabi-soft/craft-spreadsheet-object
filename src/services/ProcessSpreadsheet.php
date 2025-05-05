@@ -12,159 +12,184 @@ use yii\base\InvalidConfigException;
 use craft\helpers\StringHelper;
 use yii\log\Logger;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use craft\helpers\ArrayHelper;
-
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 /**
- *
  * @property-read void $object
  */
 class ProcessSpreadsheet extends Component
 {
-    const SUPPORTED_EXTENSIONS = [
-      'csv',
-      'xls',
-      'xlsx'
-    ];
+    private const SUPPORTED_EXTENSIONS = ['csv', 'xls', 'xlsx'];
 
     /**
      * @throws InvalidConfigException
      * @throws VolumeException
      */
-    public static function getArrayFromAsset(Asset $file = null, array $options = []): bool|array
+    public static function getArrayFromAsset(?Asset $file = null, array $options = []): bool|array
     {
-        if(!$file) {
+        if (!$file) {
             return false;
         }
-        if(! in_array(StringHelper::toLowerCase($file->extension), self::SUPPORTED_EXTENSIONS) ) {
-            Craft::getLogger()->log($file->filename . ' has an unsupported extension of: ' . $file->extension, Logger::LEVEL_ERROR, 'spreadsheet-object');
+
+        $extension = StringHelper::toLowerCase($file->extension);
+        if (!in_array($extension, self::SUPPORTED_EXTENSIONS)) {
+            Craft::getLogger()->log(
+                "{$file->filename} has an unsupported extension: {$file->extension}",
+                Logger::LEVEL_ERROR,
+                'spreadsheet-object'
+            );
             return false;
         }
 
         $storeInDb = \wabisoft\spreadsheetobject\Plugin::getInstance()->getSettings()->storeInDb;
         $record = StoreSpreadsheet::fetch($file, $options);
-        if($record && $storeInDb) {
+        
+        if ($record && $storeInDb) {
             return $record;
         }
+
         $fullPath = $file->getCopyOfFile();
         $table = self::readRows($fullPath, $options);
-        if($storeInDb) {
+        
+        if ($storeInDb) {
             StoreSpreadsheet::update($file, $table, $options);
         }
+        
         return $table;
     }
 
     /**
      * @throws Exception
      */
-    private static function readRows($file, array $options = []): array
+    private static function readRows(string $file, array $options = []): array
     {
-
-        $sheet = array_key_exists('sheet', $options) ? $options['sheet'] : 1;
-        $removeRow =  array_key_exists('removeRow', $options) ? $options['removeRow'] : false;
-        $removeColumn =  array_key_exists('removeColumn', $options) ? $options['removeColumn'] : false;
-        $removeColumnByIndex = array_key_exists('removeColumnByIndex', $options) ? $options['removeColumnByIndex'] : false;
-
         $spreadsheet = IOFactory::load($file);
-        $worksheet = $spreadsheet->getActiveSheet($sheet);
-        if($removeRow) {
-            $worksheet = self::removeRow($worksheet, $removeRow);
-        }
-        if($removeColumn) {
-            $worksheet = self::removeColumn($worksheet, $removeColumn);
-        }
-        if($removeColumnByIndex) {
-            $worksheet = self::removeColumnByIndex($worksheet, $removeColumnByIndex);
-        }
-
-        $worksheet = $worksheet->removeAutoFilter();
-        $rowCount = $worksheet->getHighestDataRow();
-
-        $title = $worksheet->getTitle();
+        $worksheet = $spreadsheet->getActiveSheet($options['sheet'] ?? 1);
+        
+        // Apply transformations
+        $worksheet = self::applyTransformations($worksheet, $options);
+        
+        // Process rows
         $rows = [];
         $columnCount = 0;
-        foreach($worksheet->toArray() as $row ) {
-            if(array_filter($row)) {
-                $cells = [];
-                $columnNumber = 0;
-                foreach($row as $key => $column) {
-                    if($column) {
-                        $columnNumber = $key++;
-                        $cells[] = self::cleanCell($column);
-                    }
-                }
+        
+        foreach ($worksheet->toArray() as $row) {
+            if (!array_filter($row)) {
+                continue;
+            }
+            
+            $cells = array_map(
+                fn($column) => self::cleanCell($column),
+                array_filter($row)
+            );
+            
+            if (!empty($cells)) {
                 $rows[] = $cells;
-                $columnCount = max($columnCount, $columnNumber);
+                $columnCount = max($columnCount, count($cells));
             }
         }
+
         return [
-            "title" => $title,
-            "rows" => $rows,
-            "columnCount" => $columnCount,
-            "rowCount" => $rowCount,
+            'title' => $worksheet->getTitle(),
+            'rows' => $rows,
+            'columnCount' => $columnCount,
+            'rowCount' => $worksheet->getHighestDataRow(),
         ];
     }
 
-    private static function removeRow($sheet, $row) {
-        $amount = 1;
-        $rows = self::splitMultiple($row);
-        foreach($rows as $row) {
+    private static function applyTransformations(Worksheet $worksheet, array $options): Worksheet
+    {
+        $worksheet = $worksheet->removeAutoFilter();
+
+        if (!empty($options['removeRow'])) {
+            $worksheet = self::removeRow($worksheet, $options['removeRow']);
+        }
+
+        if (!empty($options['removeColumn'])) {
+            $worksheet = self::removeColumn($worksheet, $options['removeColumn']);
+        }
+
+        if (!empty($options['removeColumnByIndex'])) {
+            $worksheet = self::removeColumnByIndex($worksheet, $options['removeColumnByIndex']);
+        }
+
+        return $worksheet;
+    }
+
+    private static function removeRow(Worksheet $sheet, string|int $row): Worksheet
+    {
+        foreach (self::splitMultiple($row) as $rowNumber) {
             try {
-                $sheet->removeRow(intval($row), $amount);
-            } catch(exception $e) {
+                $sheet->removeRow((int)$rowNumber, 1);
+            } catch (Exception $e) {
                 Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
             }
         }
         return $sheet;
     }
 
-    private static function removeColumn($sheet, $column) {
-        $columns = self::splitMultiple($column);
-        foreach($columns as $col) {
+    private static function removeColumn(Worksheet $sheet, string|int $column): Worksheet
+    {
+        foreach (self::splitMultiple($column) as $col) {
             try {
                 $sheet->removeColumn($col);
-            } catch(exception $e) {
+            } catch (Exception $e) {
                 Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
             }
         }
         return $sheet;
     }
-    private static function removeColumnByIndex($sheet, $column) {
-        $amount = 1;
-        $columns = self::splitMultiple($column);
-        foreach($columns as $col) {
+
+    private static function removeColumnByIndex(Worksheet $sheet, string|int $column): Worksheet
+    {
+        foreach (self::splitMultiple($column) as $col) {
             try {
-                $sheet->removeColumnByIndex($col, $amount);
-            } catch (exception $e) {
+                $sheet->removeColumnByIndex((int)$col, 1);
+            } catch (Exception $e) {
                 Craft::getLogger()->log($e, Logger::LEVEL_ERROR, 'spreadsheet-object');
             }
         }
         return $sheet;
     }
 
-    private static function splitMultiple($string) {
-        $columnsArray = StringHelper::explode($string, ',');
-        $columnsArray = array_unique($columnsArray);
-        arsort($columnsArray);
-        return $columnsArray;
+    private static function splitMultiple(string|int $string): array
+    {
+        $items = StringHelper::explode((string)$string, ',');
+        $items = array_unique($items);
+        rsort($items);
+        return $items;
     }
 
-    private static function splitRange($string) {
+    /**
+     * Splits a range string into start and amount values
+     * 
+     * @param string $string The range string in format "start,amount"
+     * @return array{start: int, amount: int}|false Returns array with start and amount, or false if invalid
+     */
+    private static function splitRange(string $string): array|false
+    {
         $options = explode(',', $string);
-        $first = $options[0];
-        $amount = $options[1];
-        if(!is_numeric($first) || !is_numeric($amount)) {
+        
+        if (count($options) !== 2) {
             return false;
         }
+
+        [$start, $amount] = $options;
+
+        if (!is_numeric($start) || !is_numeric($amount)) {
+            return false;
+        }
+
         return [
-            'start' => intval($first),
-            'amount' => intval($amount),
+            'start' => (int)$start,
+            'amount' => (int)$amount,
         ];
     }
 
-    private static function cleanCell($data) {
+    private static function cleanCell($data): string
+    {
         $data = StringHelper::trim($data);
         $data = HtmlPurifier::cleanUtf8($data);
-        return preg_replace('/^<style>.*?<\\/style>/is', '', $data);
+        return preg_replace('/^<style>.*?<\/style>/is', '', $data);
     }
 }
