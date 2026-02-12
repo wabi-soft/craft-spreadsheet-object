@@ -3,14 +3,7 @@
     "description": "CSV, XLS and XLSX files to code to use in Twig.",
     "type": "craft-plugin",
     "license": "proprietary",
-    "version": "2.1.0",
-    "scripts": {
-        "changelog": "php vendor/bin/conventional-changelog",
-        "release": "php vendor/bin/conventional-changelog --commit",
-        "release:patch": "php vendor/bin/conventional-changelog --patch --commit",
-        "release:minor": "php vendor/bin/conventional-changelog --minor --commit",
-        "release:major": "php vendor/bin/conventional-changelog --major --commit"
-    },
+    "version": "2.2.0",
     "authors": [
         {
             "name": "WabiSoft",
@@ -28,9 +21,6 @@
         "php": "^8.2",
         "phpoffice/phpspreadsheet": "^4.2.0",
         "wabisoft/framework": "^5.0.0"
-    },
-    "require-dev": {
-        "marcocesarato/php-conventional-changelog": "^1.16"
     },
     "autoload": {
         "psr-4": {
