@@ -148,12 +148,12 @@ class StoreSpreadsheet
      */
     private static function findRecord(int $assetId, array $configId): ?TableRecord
     {
-        // Sort config for consistent JSON encoding
         ksort($configId);
         return TableRecord::find()
             ->where([
                 'assetId' => $assetId,
-                'configuration' => json_encode($configId)
+                'configuration' => json_encode($configId),
+                'siteId' => \Craft::$app->getSites()->getCurrentSite()->id,
             ])
             ->one();
     }

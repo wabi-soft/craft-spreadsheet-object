@@ -3,5 +3,4 @@
 /docs/node_modules
 docs/.vuepress/dist
 /.idea
-/.DS_Store
-/src/.DS_Store
+.DS_Store

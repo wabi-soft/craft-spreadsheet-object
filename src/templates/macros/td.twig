@@ -14,7 +14,6 @@
 
     {% set type = craft.tableHelper.getDataType(td, opts.autoCellDataAttribute) %}
     {%- tag 'td' with { class: class, 'data-cell-type': type } %}
-        {{ craft.tableHelper.modifyCell(td, { tr: refTr, td: loop ?? false, style })|raw }}
+        {{ craft.tableHelper.modifyCell(td, { tr: refTr, td: loop ?? false, style })|replace({"\n": "<br>"})|raw }}
     {%- endtag %}
 {% endapply %}{% endmacro %}
-cdd
