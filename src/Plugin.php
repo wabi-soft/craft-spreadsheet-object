@@ -20,6 +20,7 @@ use craft\web\twig\variables\CraftVariable;
 
 class Plugin extends \craft\base\Plugin
 {
+    public string $schemaVersion = '1.0.1';
     public function init()
     {
         parent::init();

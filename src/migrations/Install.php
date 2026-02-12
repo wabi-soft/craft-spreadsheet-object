@@ -35,11 +35,11 @@ class Install extends Migration
                 [
                     'id' => $this->primaryKey(),
                     'title' => $this->string(255)->defaultValue(''),
-                    'configuration' => $this->string(255)->defaultValue(''),
+                    'configuration' => $this->text(),
                     'columnCount' => $this->integer(),
                     'rowCount' => $this->integer(),
                     'assetId' => $this->integer()->notNull(),
-                    'sourceData' => $this->text(),
+                    'sourceData' => $this->mediumText(),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
                     'siteId' => $this->integer()->notNull(),

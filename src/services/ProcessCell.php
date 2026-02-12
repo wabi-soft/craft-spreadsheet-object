@@ -3,7 +3,6 @@
 namespace wabisoft\spreadsheetobject\services;
 
 use wabisoft\spreadsheetobject\Plugin;
-use wabisoft\framework\services\TemplateLoader;
 
 /**
  * Service class for processing and modifying spreadsheet cells
@@ -24,12 +23,16 @@ class ProcessCell
         $style = $properties['style'] ?? false;
 
         $templatePaths = self::getTemplatePaths($rowProperties, $columnProperties, $style);
-        
+
         if (!$templatePaths) {
             return $cell;
         }
 
-        $modifiedCell = TemplateLoader::load($templatePaths, ['cell' => $cell]);
+        if (!class_exists('wabisoft\framework\services\TemplateLoader')) {
+            return $cell;
+        }
+
+        $modifiedCell = \wabisoft\framework\services\TemplateLoader::load($templatePaths, ['cell' => $cell]);
 
         return $modifiedCell ?: $cell;
     }

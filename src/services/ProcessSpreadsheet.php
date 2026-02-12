@@ -49,12 +49,22 @@ class ProcessSpreadsheet extends Component
         }
 
         $fullPath = $file->getCopyOfFile();
-        $table = self::readRows($fullPath, $options);
-        
+
+        try {
+            $table = self::readRows($fullPath, $options);
+        } catch (\Exception $e) {
+            Craft::getLogger()->log(
+                "Failed to read {$file->filename}: {$e->getMessage()}",
+                Logger::LEVEL_ERROR,
+                'spreadsheet-object'
+            );
+            return false;
+        }
+
         if ($storeInDb) {
             StoreSpreadsheet::update($file, $table, $options);
         }
-        
+
         return $table;
     }
 
@@ -64,7 +74,18 @@ class ProcessSpreadsheet extends Component
     private static function readRows(string $file, array $options = []): array
     {
         $spreadsheet = IOFactory::load($file);
-        $worksheet = $spreadsheet->getActiveSheet($options['sheet'] ?? 1);
+
+        $sheetIndex = (int) ($options['sheet'] ?? 0);
+        try {
+            $worksheet = $spreadsheet->getSheet($sheetIndex);
+        } catch (Exception $e) {
+            Craft::getLogger()->log(
+                "Sheet index {$sheetIndex} not found, falling back to active sheet",
+                Logger::LEVEL_WARNING,
+                'spreadsheet-object'
+            );
+            $worksheet = $spreadsheet->getActiveSheet();
+        }
         
         // Apply transformations
         $worksheet = self::applyTransformations($worksheet, $options);
@@ -74,26 +95,24 @@ class ProcessSpreadsheet extends Component
         $columnCount = 0;
         
         foreach ($worksheet->toArray() as $row) {
-            if (!array_filter($row)) {
+            if (!array_filter($row, fn($v) => $v !== null && $v !== '')) {
                 continue;
             }
-            
+
             $cells = array_map(
-                fn($column) => self::cleanCell($column),
-                array_filter($row)
+                fn($column) => self::cleanCell($column ?? ''),
+                $row
             );
-            
-            if (!empty($cells)) {
-                $rows[] = $cells;
-                $columnCount = max($columnCount, count($cells));
-            }
+
+            $rows[] = $cells;
+            $columnCount = max($columnCount, count($cells));
         }
 
         return [
             'title' => $worksheet->getTitle(),
             'rows' => $rows,
             'columnCount' => $columnCount,
-            'rowCount' => $worksheet->getHighestDataRow(),
+            'rowCount' => count($rows),
         ];
     }
 
@@ -160,36 +179,10 @@ class ProcessSpreadsheet extends Component
         return $items;
     }
 
-    /**
-     * Splits a range string into start and amount values
-     * 
-     * @param string $string The range string in format "start,amount"
-     * @return array{start: int, amount: int}|false Returns array with start and amount, or false if invalid
-     */
-    private static function splitRange(string $string): array|false
-    {
-        $options = explode(',', $string);
-        
-        if (count($options) !== 2) {
-            return false;
-        }
-
-        [$start, $amount] = $options;
-
-        if (!is_numeric($start) || !is_numeric($amount)) {
-            return false;
-        }
-
-        return [
-            'start' => (int)$start,
-            'amount' => (int)$amount,
-        ];
-    }
-
     private static function cleanCell($data): string
     {
         $data = StringHelper::trim($data);
-        $data = HtmlPurifier::cleanUtf8($data);
+        $data = HtmlPurifier::process($data);
         return preg_replace('/^<style>.*?<\/style>/is', '', $data);
     }
 }
